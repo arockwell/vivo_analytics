@@ -32,6 +32,10 @@ task :remove_non_uf_orgs do
   remove_file("#{query_files[:organization_sub_contracted]}.nt")
 end
 
-task :test_remove do
-  remove_file("~/dev/remove_data/test_remove.nt")
+task :query_all_entities do
+  query_files.each do |name, file|
+    puts "Running #{file}"
+    system("date")
+    run_query(file)
+  end
 end
