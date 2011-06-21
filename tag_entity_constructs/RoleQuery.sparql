@@ -1,0 +1,14 @@
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  core: <http://vivoweb.org/ontology/core#>
+PREFIX  ufVivo: <http://vivo.ufl.edu/ontology/vivo-ufl/>
+
+CONSTRUCT 
+{
+ ?roleuri rdf:type ufVivo:tagForDeletion . 
+}
+WHERE
+{
+    ?granturi rdf:type core:Grant .
+    ?granturi core:relatedRole ?roleuri .
+    ?roleuri ufVivo:harvestedBy "DSR-Harvester" .
+}

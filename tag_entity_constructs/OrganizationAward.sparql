@@ -1,0 +1,21 @@
+
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  score: <http://vivoweb.org/ontology/score#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  core: <http://vivoweb.org/ontology/core#>
+PREFIX  ufVivo: <http://vivo.ufl.edu/ontology/vivo-ufl/>
+
+CONSTRUCT 
+{
+  ?grantawarder rdf:type ufVivo:tagForDeletion
+}
+WHERE
+{
+  ?granturi rdf:type core:Grant .
+  ?granturi ufVivo:harvestedBy "DSR-Harvester" .
+  ?granturi core:grantAwardedBy ?grantawarder .
+  ?grantawarder rdf:type foaf:Organization .
+  ?grantawarder ufVivo:dateHarvested ?dateH .
+  ?grantawarder ufVivo:harvestedBy "DSR-Harvester" .
+  ?grantawarder ufVivo:sponsorID ?awarderID . 
+}
