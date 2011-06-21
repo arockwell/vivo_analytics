@@ -4,10 +4,14 @@ def run_query(query_file, type='N-TRIPLES')
   system("bash", "-c", "cd /usr/share/vivo/harvester; source /usr/share/vivo/harvester/scripts/env; $JenaConnect -j $VIVOCONFIG -JcheckEmpty=$CHECKEMPTY -Q #{type} -q \"`cat #{query_file}`\" > #{query_file}.nt")
 end
 
-def remove_file(output_file, type='N-TRILES')
-  system("bash", "-c", "cd /usr/share/vivo/harvester; source /usr/share/vivo/harvester/scripts/env; $Transfer -0 $VIVOCONFIG -OcheckEmpty=$CHECKEMPTY -R #{type} -r #{query_file}")
-
+def add_file(input_file, type='N-TRIPLES')
+  system("bash", "-c", "cd /usr/share/vivo/harvester; source /usr/share/vivo/harvester/scripts/env; $Transfer -o $VIVOCONFIG -OcheckEmpty=$CHECKEMPTY -R #{type} -r #{input_file}")
 end
+
+def remove_rdf_file(input_file, type='N-TRIPLES')
+  system("bash", "-c", "cd /usr/share/vivo/harvester; source /usr/share/vivo/harvester/scripts/env; $Transfer -o $VIVOCONFIG -OcheckEmpty=$CHECKEMPTY -R #{type} -r #{input_file} -m")
+end
+
 query_files = { :role => "~/dev/remove_data/tag_entity_constructs/RoleQuery.sparql",
   :date_time_interval => "~/dev/remove_data/tag_entity_constructs/DateTimeInterval.sparql",
   :co_pi_stub => "~/dev/remove_data/tag_entity_constructs/CoPIStubQuery.sparql",
