@@ -39,16 +39,6 @@ vivo_main_model = "/usr/share/vivo/harvester/config/models/vivo.xml"
 vivo_inferences_model = "/usr/share/vivo/harvester/config/models/vivo_inferences.xml"
 vivo_inferences_scratchpad_model = "/usr/share/vivo/harvester/config/models/vivo_inferences_scratchpad.xml"
 
-task :query_non_uf_orgs do
-  run_query(query_files[:organization_award])
-  run_query(query_files[:organization_sub_contracted])
-end
-
-task :remove_non_uf_orgs do
-  remove_file("#{query_files[:organization_award]}.nt")
-  remove_file("#{query_files[:organization_sub_contracted]}.nt")
-end
-
 task :query_all_entities do
   query_files.each do |name, file|
     puts "Running #{file}"
