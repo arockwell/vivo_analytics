@@ -39,3 +39,18 @@ task :query_all_entities do
     run_query(file)
   end
 end
+
+task :count_entities do
+  system("date")
+  puts "Orgs"
+  run_query("~/dev/remove_data/tag_entity_constructs/count_orgs.sparql")
+  system("cat ~/dev/remove_data/tag_entity_constructs/count_orgs.sparql.nt")
+  puts "People"
+  system("date")
+  run_query("~/dev/remove_data/tag_entity_constructs/count_people.sparql")
+  system("cat ~/dev/remove_data/tag_entity_constructs/count_people.sparql.nt")
+  puts "Grants"
+  system("date")
+  run_query("~/dev/remove_data/tag_entity_constructs/count_grants.sparql")
+  system("cat ~/dev/remove_data/tag_entity_constructs/count_grants.sparql.nt")
+end
