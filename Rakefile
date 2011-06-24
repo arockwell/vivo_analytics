@@ -34,6 +34,17 @@ def create_query_task(query_name, query_location)
   end
 end
 
+def create_add_rdf_task(query_name, query_location)
+  namespace :add do
+    desc "Add rdf from #{query_location}.nt"
+    task query_name => [ "query_#{query_name}".intern ] do
+      system("date")
+      puts "Adding rdf in: #{query_file}.nt"
+      add_file("#{query_file}.nt")
+    end
+  end
+end
+
 QUERY_BASE_DIR = File.expand_path(File.dirname(__FILE__)) + "/tag_entity_constructs"
 
 query_files = { :role => "#{QUERY_BASE_DIR}/RoleQuery.sparql",
@@ -62,14 +73,7 @@ task :query_all_entities => query_tasks
 
 add_deletion_tag_tasks = []
 query_files.each do |query_name, query_file|
-  task_name = "add_deletion_tag_#{query_name}".intern 
-  add_deletion_tag_tasks << task_name
-  task task_name => [ "query_#{query_name}".intern ]do
-    system("date")
-    puts "Performing #{task_name}"
-    puts "Adding data in: #{query_file}.nt"
-    add_file("#{query_file}.nt")
-  end
+  create_add_rdf_task(query_name, query_file)
 end
 
 desc "Add deletion tag for all entities"
