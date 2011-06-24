@@ -109,3 +109,20 @@ task :count_entities do
   run_query("~/dev/remove_data/tag_entity_constructs/count_grants.sparql")
   system("cat ~/dev/remove_data/tag_entity_constructs/count_grants.sparql.nt")
 end
+
+stray_co_pi_role = "~/dev/remove_data/tag_entity_constructs/FindStrayhasCoPIRole.sparql"
+stray_pi_role = "~/dev/remove_data/tag_entity_constructs/FindStrayhasPIRole.sparql"
+
+task :query_stray_roles do
+  system("date")
+  run_query(stray_co_pi_role)
+  system("date")
+  run_query(stray_pi_role)
+end
+
+task :add_deletion_tag_for_stray_roles do
+  system("date")
+  add_file("#{stray_co_pi_role}.nt")
+  system("date")
+  add_file("#{stray_pi_role}.nt")
+end
