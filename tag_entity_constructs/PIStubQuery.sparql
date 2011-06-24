@@ -8,7 +8,7 @@ PREFIX  ufVivo: <http://vivo.ufl.edu/ontology/vivo-ufl/>
 
 CONSTRUCT 
 {
-  ?personuri rdf:type ufVivo:tagForDeltion .
+  ?personuri rdf:type ufVivo:tagForDeletion .
 }
 WHERE
 {
