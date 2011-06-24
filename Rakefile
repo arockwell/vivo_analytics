@@ -23,6 +23,17 @@ def delete_all_tag_for_deletion_entities(subject_file, object_file, model_config
   remove_rdf_file("#{object_file}.nt")
 end
 
+def create_query_task(query_name, query_location)
+  task_name = "query_#{query_name}".intern
+  desc "Run #{query_location}"
+  task task_name do
+    system("date")
+    puts "Performing #{task_name}"
+    puts "Running query: #{query_file}"
+    run_query(query_file)
+  end
+end
+
 query_files = { :role => "~/dev/remove_data/tag_entity_constructs/RoleQuery.sparql",
   :date_time_interval => "~/dev/remove_data/tag_entity_constructs/DateTimeInterval.sparql",
   :co_pi_stub => "~/dev/remove_data/tag_entity_constructs/CoPIStubQuery.sparql",
@@ -41,14 +52,7 @@ vivo_inferences_scratchpad_model = "/usr/share/vivo/harvester/config/models/vivo
 
 query_tasks = []
 query_files.each do |query_name, query_file|
-  task_name = "query_#{query_name}".intern
-  query_tasks << task_name
-  task task_name do
-    system("date")
-    puts "Performing #{task_name}"
-    puts "Running query: #{query_file}"
-    run_query(query_file)
-  end
+  query_tasks << create_query_task(query_name, query_file)
 end
 
 task :query_all_entities => query_tasks
@@ -110,19 +114,19 @@ task :count_entities do
   system("cat ~/dev/remove_data/tag_entity_constructs/count_grants.sparql.nt")
 end
 
-stray_co_pi_role = "~/dev/remove_data/tag_entity_constructs/FindStrayhasCoPIRole.sparql"
-stray_pi_role = "~/dev/remove_data/tag_entity_constructs/FindStrayhasPIRole.sparql"
-stray_administers_grant = "~/dev/remove_data/tag_entity_constructs/FindStrayAdministersGrant.sparql"
+stray_queries = {
+  :stray_co_pi_role => "~/dev/remove_data/tag_entity_constructs/FindStrayhasCoPIRole.sparql",
+  :stray_pi_role => "~/dev/remove_data/tag_entity_constructs/FindStrayhasPIRole.sparql",
+  :stray_administers_grant => "~/dev/remove_data/tag_entity_constructs/FindStrayAdministersGrant.sparql"
+}
+
+stray_query_tasks = []
+stray_queries.each do |query_name, query_location|
+  stray_query_tasks = create_query_task(query_name, query_location)
+end
 
 desc "Find all stray roles"
-task :query_stray_entities do
-  system("date")
-  run_query(stray_co_pi_role)
-  system("date")
-  run_query(stray_pi_role)
-  system("date")
-  run_query(stray_administers_grant)
-end
+task :query_stray_entities => stray_query_tasks
 
 desc "Add deletion tag for stray entities"
 task :add_deletion_tag_for_stray_entities do
