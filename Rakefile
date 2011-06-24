@@ -29,8 +29,8 @@ def create_query_task(query_name, query_location)
   task task_name do
     system("date")
     puts "Performing #{task_name}"
-    puts "Running query: #{query_file}"
-    run_query(query_file)
+    puts "Running query: #{query_location}"
+    run_query(query_location)
   end
 end
 
@@ -111,7 +111,7 @@ count_entity_queries = {
 }
 count_entity_tasks = []
 count_entity_queries.each do |query_name, query_location|
-  count_entitY_tasks << create_query_task(query_name, query_location)
+  count_entity_tasks << create_query_task(query_name, query_location)
 end
 
 desc "Print counts of all entities that might have a ufVivo:harvestedBy tag"
