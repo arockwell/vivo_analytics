@@ -55,6 +55,7 @@ query_files.each do |query_name, query_file|
   query_tasks << create_query_task(query_name, query_file)
 end
 
+desc "Query all entities"
 task :query_all_entities => query_tasks
 
 add_deletion_tag_tasks = []
@@ -69,21 +70,25 @@ query_files.each do |query_name, query_file|
   end
 end
 
+desc "Add deletion tag for all entities"
 task :add_deletion_tag_for_all_entities => add_deletion_tag_tasks
 
-task :delete_all_entities => [:run_query_tag_for_deletion, :delete_all_entities_from_main_model, :delete_all_entities_from_inferencing_models]
-
-task :delete_all_entities_from_main_model do
-  puts "Performing delete_all_entities_from_main_model"
-  delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_main_model)
-end
-
+desc "Find all statements related to entities of rdf:type ufVivo:tagForDeletion"
 task :run_query_tag_for_deletion do
   puts "Perofrming run_query_tag_for_deletion"
   system("date")
   run_query(tag_for_deletion_by_subject_file)
   system("date")
   run_query(tag_for_deletion_by_object_file)
+end
+
+desc "Delete all entities from all models"
+task :delete_all_entities => [:run_query_tag_for_deletion, :delete_all_entities_from_main_model, :delete_all_entities_from_inferencing_models]
+
+desc "Delete all entities from main model"
+task :delete_all_entities_from_main_model do
+  puts "Performing delete_all_entities_from_main_model"
+  delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_main_model)
 end
 
 # Inferencing tasks _cannot_ rerun run_query_tag_for_deletion, because this will not have data in it
