@@ -39,43 +39,59 @@ vivo_main_model = "/usr/share/vivo/harvester/config/models/vivo.xml"
 vivo_inferences_model = "/usr/share/vivo/harvester/config/models/vivo_inferences.xml"
 vivo_inferences_scratchpad_model = "/usr/share/vivo/harvester/config/models/vivo_inferences_scratchpad.xml"
 
-task :query_all_entities do
-  query_files.each do |name, file|
-    puts "Running #{file}"
+query_tasks = []
+query_files.each do |query_name, query_file|
+  task_name = "query_#{query_name}".intern
+  query_tasks << task_name
+  task task_name do
     system("date")
-    run_query(file)
+    puts "Performing #{task_name}"
+    puts "Running query: #{query_file}"
+    run_query(query_file)
   end
 end
 
-task :add_all_tag_for_deletion do
-  query_files.each do |name, file|
-    puts "Running #{file}"
+task :query_all_entities => query_tasks
+
+add_deletion_tag_tasks = []
+query_files.each do |query_name, query_file|
+  task_name = "add_deletion_tag_#{query_name}".intern 
+  add_deletion_tag_tasks << task_name
+  task task_name => [ "query_#{query_name}".intern ]do
     system("date")
-    add_file("#{file}.nt")
+    puts "Performing #{task_name}"
+    puts "Adding data in: #{query_file}.nt"
+    add_file("#{query_file}.nt")
   end
 end
 
-task :delete_all_entities => [:run_query_tag_for_deletion, :delete_all_entities_from_main_model, :delete_all_from_inferencing_models]
+task :add_deletion_tag_for_all_entities => add_deletion_tag_tasks
+
+task :delete_all_entities => [:run_query_tag_for_deletion, :delete_all_entities_from_main_model, :delete_all_entities_from_inferencing_models]
 
 task :delete_all_entities_from_main_model do
+  puts "Performing delete_all_entities_from_main_model"
   delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_main_model)
 end
 
 task :run_query_tag_for_deletion do
+  puts "Perofrming run_query_tag_for_deletion"
   system("date")
-  run_query(subject_file)
+  run_query(tag_for_deletion_by_subject_file)
   system("date")
-  run_query(object_file)
+  run_query(tag_for_deletion_by_object_file)
 end
 
 # Inferencing tasks _cannot_ rerun run_query_tag_for_deletion, because this will not have data in it
 task :delete_all_entities_from_inferencing_models => [:delete_from_inf, :delete_from_inf_scratchpad ]
 
 task :delete_from_inf do
+  puts "Performing delete_from_inf"
   delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_inferences_model)
 end
 
 task :delete_from_inf_scratchpad do
+  puts "Performing delete_from_inf_scratchpad"
   delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_inferences_scratchpad_model)
 end
 
