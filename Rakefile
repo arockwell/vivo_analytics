@@ -107,9 +107,9 @@ task :delete_from_inf_scratchpad do
 end
 
 count_entity_queries = {
-  :count_orgs => "#{QUERY_BASE_DIR}/count_orgs.sparql",
-  :count_people => "#{QUERY_BASE_DIR}/count_people.sparql",
-  :count_grants => "#{QUERY_BASE_DIR}/count_grants.sparql"
+  :count_dsr_orgs => "#{QUERY_BASE_DIR}/count_dsr_orgs.sparql",
+  :count_dsr_people => "#{QUERY_BASE_DIR}/count_dsr_people.sparql",
+  :count_dsr_grants => "#{QUERY_BASE_DIR}/count_dsr_grants.sparql"
 }
 count_entity_tasks = []
 count_entity_queries.each do |query_name, query_location|
