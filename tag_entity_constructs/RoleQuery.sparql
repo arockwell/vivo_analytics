@@ -8,7 +8,6 @@ CONSTRUCT
 }
 WHERE
 {
-    ?granturi rdf:type core:Grant .
-    ?granturi core:relatedRole ?roleuri .
     ?roleuri ufVivo:harvestedBy "DSR-Harvester" .
+    ?roleuri rdf:type core:Role
 }
