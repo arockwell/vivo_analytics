@@ -34,18 +34,20 @@ def create_query_task(query_name, query_location)
   end
 end
 
-query_files = { :role => "~/dev/remove_data/tag_entity_constructs/RoleQuery.sparql",
-  :date_time_interval => "~/dev/remove_data/tag_entity_constructs/DateTimeInterval.sparql",
-  :co_pi_stub => "~/dev/remove_data/tag_entity_constructs/CoPIStubQuery.sparql",
-  :pi_stub => "~/dev/remove_data/tag_entity_constructs/PIStubQuery.sparql",
-  :organization_administer => "~/dev/remove_data/tag_entity_constructs/OrganizationAdminister.sparql",
-  :organization_award => "~/dev/remove_data/tag_entity_constructs/OrganizationAward.sparql",
-  :organization_sub_contracted => "~/dev/remove_data/tag_entity_constructs/OrganizationSubContracted.sparql",
-  :grant_query => "~/dev/remove_data/tag_entity_constructs/GrantQuery.sparql",
+QUERY_BASE_DIR = File.expand_path(File.dirname(__FILE__)) + "/tag_entity_constructs"
+
+query_files = { :role => "#{QUERY_BASE_DIR}/RoleQuery.sparql",
+  :date_time_interval => "#{QUERY_BASE_DIR}/DateTimeInterval.sparql",
+  :co_pi_stub => "#{QUERY_BASE_DIR}/CoPIStubQuery.sparql",
+  :pi_stub => "#{QUERY_BASE_DIR}/PIStubQuery.sparql",
+  :organization_administer => "#{QUERY_BASE_DIR}/OrganizationAdminister.sparql",
+  :organization_award => "#{QUERY_BASE_DIR}/OrganizationAward.sparql",
+  :organization_sub_contracted => "#{QUERY_BASE_DIR}/OrganizationSubContracted.sparql",
+  :grant_query => "#{QUERY_BASE_DIR}/GrantQuery.sparql",
 }
 
-tag_for_deletion_by_subject_file = "~/dev/remove_data/tag_entity_constructs/TagForDeletionSubject.sparql"
-tag_for_deletion_by_object_file = "~/dev/remove_data/tag_entity_constructs/TagForDeletionObject.sparql"
+tag_for_deletion_by_subject_file = "#{QUERY_BASE_DIR}/TagForDeletionSubject.sparql"
+tag_for_deletion_by_object_file = "#{QUERY_BASE_DIR}/TagForDeletionObject.sparql"
 vivo_main_model = "/usr/share/vivo/harvester/config/models/vivo.xml"
 vivo_inferences_model = "/usr/share/vivo/harvester/config/models/vivo_inferences.xml"
 vivo_inferences_scratchpad_model = "/usr/share/vivo/harvester/config/models/vivo_inferences_scratchpad.xml"
@@ -105,9 +107,9 @@ task :delete_from_inf_scratchpad do
 end
 
 count_entity_queries = {
-  :count_orgs => "~/dev/remove_data/tag_entity_constructs/count_orgs.sparql",
-  :count_people => "~/dev/remove_data/tag_entity_constructs/count_people.sparql",
-  :count_grants => "~/dev/remove_data/tag_entity_constructs/count_grants.sparql"
+  :count_orgs => "#{QUERY_BASE_DIR}/count_orgs.sparql",
+  :count_people => "#{QUERY_BASE_DIR}/count_people.sparql",
+  :count_grants => "#{QUERY_BASE_DIR}/count_grants.sparql"
 }
 count_entity_tasks = []
 count_entity_queries.each do |query_name, query_location|
@@ -123,9 +125,9 @@ task :count_entities => count_entity_tasks do
 end
 
 stray_queries = {
-  :stray_co_pi_role => "~/dev/remove_data/tag_entity_constructs/FindStrayhasCoPIRole.sparql",
-  :stray_pi_role => "~/dev/remove_data/tag_entity_constructs/FindStrayhasPIRole.sparql",
-  :stray_administers_grant => "~/dev/remove_data/tag_entity_constructs/FindStrayAdministersGrant.sparql"
+  :stray_co_pi_role => "#{QUERY_BASE_DIR}/FindStrayhasCoPIRole.sparql",
+  :stray_pi_role => "#{QUERY_BASE_DIR}/FindStrayhasPIRole.sparql",
+  :stray_administers_grant => "#{QUERY_BASE_DIR}/FindStrayAdministersGrant.sparql"
 }
 
 stray_query_tasks = []
