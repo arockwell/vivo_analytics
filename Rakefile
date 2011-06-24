@@ -104,19 +104,22 @@ task :delete_from_inf_scratchpad do
   delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_inferences_scratchpad_model)
 end
 
-task :count_entities do
-  system("date")
-  puts "Orgs"
-  run_query("~/dev/remove_data/tag_entity_constructs/count_orgs.sparql")
-  system("cat ~/dev/remove_data/tag_entity_constructs/count_orgs.sparql.nt")
-  puts "People"
-  system("date")
-  run_query("~/dev/remove_data/tag_entity_constructs/count_people.sparql")
-  system("cat ~/dev/remove_data/tag_entity_constructs/count_people.sparql.nt")
-  puts "Grants"
-  system("date")
-  run_query("~/dev/remove_data/tag_entity_constructs/count_grants.sparql")
-  system("cat ~/dev/remove_data/tag_entity_constructs/count_grants.sparql.nt")
+count_entity_queries = {
+  :count_orgs => "~/dev/remove_data/tag_entity_constructs/count_orgs.sparql",
+  :count_people => "~/dev/remove_data/tag_entity_constructs/count_people.sparql",
+  :count_grants => "~/dev/remove_data/tag_entity_constructs/count_grants.sparql"
+}
+count_entity_tasks = []
+count_entity_queries.each do |query_name, query_location|
+  count_entitY_tasks << create_query_task(query_name, query_location)
+end
+
+desc "Print counts of all entities that might have a ufVivo:harvestedBy tag"
+task :count_entities => count_entity_tasks do
+  count_entity_queries.each do |query_name, query_location|
+    puts query_name
+    system("cat #{query_location}.nt")
+  end
 end
 
 stray_queries = {
