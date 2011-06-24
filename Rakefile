@@ -112,17 +112,24 @@ end
 
 stray_co_pi_role = "~/dev/remove_data/tag_entity_constructs/FindStrayhasCoPIRole.sparql"
 stray_pi_role = "~/dev/remove_data/tag_entity_constructs/FindStrayhasPIRole.sparql"
+stray_administers_grant = "~/dev/remove_data/tag_entity_constructs/FindStrayAdministersGrant.sparql"
 
-task :query_stray_roles do
+desc "Find all stray roles"
+task :query_stray_entities do
   system("date")
   run_query(stray_co_pi_role)
   system("date")
   run_query(stray_pi_role)
+  system("date")
+  run_query(stray_administers_grant)
 end
 
-task :add_deletion_tag_for_stray_roles do
+desc "Add deletion tag for stray entities"
+task :add_deletion_tag_for_stray_entities do
   system("date")
   add_file("#{stray_co_pi_role}.nt")
   system("date")
   add_file("#{stray_pi_role}.nt")
+  system("date")
+  add_file("#{stray_administers_grant}.nt")
 end
