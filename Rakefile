@@ -55,6 +55,9 @@ query_files = { :role => "#{QUERY_BASE_DIR}/RoleQuery.sparql",
   :organization_award => "#{QUERY_BASE_DIR}/OrganizationAward.sparql",
   :organization_sub_contracted => "#{QUERY_BASE_DIR}/OrganizationSubContracted.sparql",
   :grant_query => "#{QUERY_BASE_DIR}/GrantQuery.sparql",
+  :stray_co_pi_role => "#{QUERY_BASE_DIR}/FindStrayhasCoPIRole.sparql",
+  :stray_pi_role => "#{QUERY_BASE_DIR}/FindStrayhasPIRole.sparql",
+  :stray_administers_grant => "#{QUERY_BASE_DIR}/FindStrayAdministersGrant.sparql"
 }
 
 tag_for_deletion_by_subject_file = "#{QUERY_BASE_DIR}/TagForDeletionSubject.sparql"
@@ -76,8 +79,10 @@ query_files.each do |query_name, query_file|
   create_add_rdf_task(query_name, query_file)
 end
 
-desc "Add deletion tag for all entities"
-task :add_deletion_tag_for_all_entities => add_deletion_tag_tasks
+namespace :add do
+  desc "Add deletion tag for all entities"
+  task :all_deletion_tags => add_deletion_tag_tasks
+end
 
 desc "Find all statements related to entities of rdf:type ufVivo:tagForDeletion"
 task :run_query_tag_for_deletion do
@@ -88,26 +93,23 @@ task :run_query_tag_for_deletion do
   run_query(tag_for_deletion_by_object_file)
 end
 
-desc "Delete all entities from all models"
-task :delete_all_entities => [:run_query_tag_for_deletion, :delete_all_entities_from_main_model, :delete_all_entities_from_inferencing_models]
+namespace :delete do
+  desc "Delete all entities from all models"
+  task :all_entities_from_all_models => [:run_query_tag_for_deletion, :delete_all_entities_from_main_model, :delete_all_entities_from_inferencing_models]
 
-desc "Delete all entities from main model"
-task :delete_all_entities_from_main_model do
-  puts "Performing delete_all_entities_from_main_model"
-  delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_main_model)
-end
+  desc "Delete all entities from main model"
+  task :all_entities_from_main_model do
+    puts "Performing delete_all_entities_from_main_model"
+    delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_main_model)
+  end
 
-# Inferencing tasks _cannot_ rerun run_query_tag_for_deletion, because this will not have data in it
-task :delete_all_entities_from_inferencing_models => [:delete_from_inf, :delete_from_inf_scratchpad ]
-
-task :delete_from_inf do
-  puts "Performing delete_from_inf"
-  delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_inferences_model)
-end
-
-task :delete_from_inf_scratchpad do
-  puts "Performing delete_from_inf_scratchpad"
-  delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_inferences_scratchpad_model)
+  # Inferencing tasks _cannot_ rerun run_query_tag_for_deletion, because this will not have data in it
+  task :all_entities_from_inferencing_models do
+    puts "Performing delete_from_inf"
+    delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_inferences_model)
+    puts "Performing delete_from_inf_scratchpad"
+    delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_inferences_scratchpad_model)
+  end
 end
 
 count_entity_queries = {
@@ -126,28 +128,4 @@ task :count_entities => count_entity_tasks do
     puts query_name
     system("cat #{query_location}.nt")
   end
-end
-
-stray_queries = {
-  :stray_co_pi_role => "#{QUERY_BASE_DIR}/FindStrayhasCoPIRole.sparql",
-  :stray_pi_role => "#{QUERY_BASE_DIR}/FindStrayhasPIRole.sparql",
-  :stray_administers_grant => "#{QUERY_BASE_DIR}/FindStrayAdministersGrant.sparql"
-}
-
-stray_query_tasks = []
-stray_queries.each do |query_name, query_location|
-  stray_query_tasks = create_query_task(query_name, query_location)
-end
-
-desc "Find all stray roles"
-task :query_stray_entities => stray_query_tasks
-
-desc "Add deletion tag for stray entities"
-task :add_deletion_tag_for_stray_entities do
-  system("date")
-  add_file("#{stray_co_pi_role}.nt")
-  system("date")
-  add_file("#{stray_pi_role}.nt")
-  system("date")
-  add_file("#{stray_administers_grant}.nt")
 end
