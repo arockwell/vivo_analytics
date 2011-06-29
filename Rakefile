@@ -1,5 +1,7 @@
 #!/usr/bin/ruby
 
+QUERY_BASE_DIR = File.expand_path(File.dirname(__FILE__)) + "/tag_entity_constructs"
+
 def run_query(query_file, type='N-TRIPLES')
   system("bash", "-c", "cd /usr/share/vivo/harvester; source /usr/share/vivo/harvester/scripts/env; $JenaConnect -j $VIVOCONFIG -JcheckEmpty=$CHECKEMPTY -Q #{type} -q \"`cat #{query_file}`\" > #{query_file}.nt")
 end
@@ -49,7 +51,26 @@ def create_add_rdf_task(query_name, query_location)
   end
 end
 
-QUERY_BASE_DIR = File.expand_path(File.dirname(__FILE__)) + "/tag_entity_constructs"
+def generate_type_count_task(query_name, type)
+  sparql = <<-EOH
+PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+select count(?uri)
+where
+{
+  ?uri rdf:type <#{type}>
+}
+  EOH
+  task_name = "query_#{query_name}".intern
+  desc "Run count of: #{type}"
+  task task_name do
+    system("date")
+    puts "Performing #{task_name}"
+    puts "Running query: #{query_name}"
+    run_query_string(sparql, "#{QUERY_BASE_DIR}/#{query_name}.nt")
+    system("cat #{QUERY_BASE_DIR}/#{query_name}.nt")
+  end
+end
 
 query_files = { :role => "#{QUERY_BASE_DIR}/RoleQuery.sparql",
   :date_time_interval => "#{QUERY_BASE_DIR}/DateTimeInterval.sparql",
@@ -132,4 +153,25 @@ task :count_dsr_entities => count_dsr_entity_tasks do
     puts query_name
     system("cat #{query_location}.nt")
   end
+end
+
+namespace :verify do
+  count_entities = {
+    :count_faculty => "http://vivoweb.org/ontology/core#FacultyMember",
+    :count_courtesy_faculty => "http://vivo.ufl.edu/ontology/vivo-ufl/CourtesyFaculty",
+    :count_librarian =>"http://vivoweb.org/ontology/core#Librarian",
+    :count_non_academic =>"http://vivoweb.org/ontology/core#NonAcademic",
+    :count_non_faculty_academic =>"http://vivoweb.org/ontology/core#NonFacultyAcademic",
+    :count_emeritus_professor => "http://vivoweb.org/ontology/core#EmeritusProfessor",
+    :count_grant => "http://vivoweb.org/ontology/core#Grant",
+    :count_agreement => "http://vivoweb.org/ontology/core#Agreement"
+  }
+  count_entity_tasks = []
+  count_entities.each do |query_name, type|
+    count_entity_task = generate_type_count_task(query_name, type)
+    count_entity_tasks << count_entity_task
+  end
+
+  desc "Count all entity types"
+  task :all => count_entity_tasks
 end
