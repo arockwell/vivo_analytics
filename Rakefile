@@ -74,8 +74,7 @@ end
 
 query_files = { :role => "#{QUERY_BASE_DIR}/RoleQuery.sparql",
   :date_time_interval => "#{QUERY_BASE_DIR}/DateTimeInterval.sparql",
-  :co_pi_stub => "#{QUERY_BASE_DIR}/CoPIStubQuery.sparql",
-  :pi_stub => "#{QUERY_BASE_DIR}/PIStubQuery.sparql",
+  :person_stub => "#{QUERY_BASE_DIR}/PIStubQuery.sparql",
   :organization_administer => "#{QUERY_BASE_DIR}/OrganizationAdminister.sparql",
   :organization_award => "#{QUERY_BASE_DIR}/OrganizationAward.sparql",
   :organization_sub_contracted => "#{QUERY_BASE_DIR}/OrganizationSubContracted.sparql",

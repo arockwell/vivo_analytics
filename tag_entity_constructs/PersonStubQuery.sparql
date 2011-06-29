@@ -8,13 +8,10 @@ PREFIX  ufVivo: <http://vivo.ufl.edu/ontology/vivo-ufl/>
 
 CONSTRUCT 
 {
-  ?personuri rdf:type ufVivo:tagForDeletion .
+ ?personuri rdf:type ufVivo:tagForDeletion .
 }
 WHERE
 {
-  ?granturi rdf:type core:Grant .
-  ?granturi core:relatedRole ?roleuri .
-  ?roleuri core:principalInvestigatorRoleOf ?personuri . 
-  OPTIONAL {?personuri ufVivo:gatorlink ?personLink . }
-  FILTER(!bound(?personLink))
+  ?personuri ufVivo:harvestedBy "DSR-Harvester" .
+  ?personuri rdf:type foaf:Person 
 }
