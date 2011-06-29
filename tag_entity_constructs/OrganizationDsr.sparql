@@ -1,0 +1,17 @@
+PREFIX  xsl:  <http://www.w3.org/1999/XSL/Transform>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX  score: <http://vivoweb.org/ontology/score#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  core: <http://vivoweb.org/ontology/core#>
+PREFIX  ufVivo: <http://vivo.ufl.edu/ontology/vivo-ufl/>
+
+CONSTRUCT 
+{
+  ?org rdf:type ufVivo:tagForDeletion
+}
+WHERE
+{
+  ?org ufVivo:harvestedBy "DSR-Harvester" .
+  ?org rdf:type foaf:Organization
+}
