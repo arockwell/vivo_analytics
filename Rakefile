@@ -72,7 +72,7 @@ end
 
 query_files = { :role => "#{QUERY_BASE_DIR}/RoleQuery.sparql",
   :date_time_interval => "#{QUERY_BASE_DIR}/DateTimeInterval.sparql",
-  :person_stub => "#{QUERY_BASE_DIR}/PIStubQuery.sparql",
+  :person_stub => "#{QUERY_BASE_DIR}/PersonStubQuery.sparql",
   :organization_administer => "#{QUERY_BASE_DIR}/OrganizationAdminister.sparql",
   :organization_award => "#{QUERY_BASE_DIR}/OrganizationAward.sparql",
   :organization_sub_contracted => "#{QUERY_BASE_DIR}/OrganizationSubContracted.sparql",
@@ -118,7 +118,7 @@ end
 
 namespace :delete do
   desc "Delete all entities from all models"
-  task :all_entities_from_all_models => [:run_query_tag_for_deletion, :delete_all_entities_from_main_model, :delete_all_entities_from_inferencing_models]
+  task :all_entities_from_all_models => [:run_query_tag_for_deletion, :all_entities_from_main_model, :all_entities_from_inferencing_models]
 
   desc "Delete all entities from main model"
   task :all_entities_from_main_model do
