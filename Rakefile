@@ -135,24 +135,6 @@ namespace :delete do
   end
 end
 
-count_dsr_entity_queries = {
-  :count_dsr_orgs => "#{QUERY_BASE_DIR}/count_dsr_orgs.sparql",
-  :count_dsr_people => "#{QUERY_BASE_DIR}/count_dsr_people.sparql",
-  :count_dsr_grants => "#{QUERY_BASE_DIR}/count_dsr_grants.sparql"
-}
-count_dsr_entity_tasks = []
-count_dsr_entity_queries.each do |query_name, query_location|
-  count_dsr_entity_tasks << create_query_task(query_name, query_location)
-end
-
-desc "Print counts of all entities that might have a ufVivo:harvestedBy tag"
-task :count_dsr_entities => count_dsr_entity_tasks do
-  count_dsr_entity_queries.each do |query_name, query_location|
-    puts query_name
-    system("cat #{query_location}.nt")
-  end
-end
-
 namespace :verify do
   count_entities = {
     :count_faculty => "http://vivoweb.org/ontology/core#FacultyMember",
@@ -168,6 +150,28 @@ namespace :verify do
   count_entities.each do |query_name, type|
     count_entity_task = generate_type_count_task(query_name, type)
     count_entity_tasks << count_entity_task
+  end
+
+  namespace :dsr do
+    count_dsr_entity_queries = {
+      :count_dsr_orgs => "#{QUERY_BASE_DIR}/count_dsr_orgs.sparql",
+      :count_dsr_people => "#{QUERY_BASE_DIR}/count_dsr_people.sparql",
+      :count_dsr_grants => "#{QUERY_BASE_DIR}/count_dsr_grants.sparql"
+    }
+    count_dsr_entity_tasks = []
+    count_dsr_entity_queries.each do |query_name, query_location|
+      count_dsr_entity_tasks << create_query_task(query_name, query_location)
+    end
+
+    desc "Print counts of all entities that might have a ufVivo:harvestedBy tag"
+    task :all => count_dsr_entity_tasks do
+      count_dsr_entity_queries.each do |query_name, query_location|
+        puts query_name
+        system("cat #{query_location}.nt")
+      end
+    end
+    count_entity_tasks = count_entity_tasks + count_dsr_entity_tasks
+
   end
 
   desc "Count all entity types"
