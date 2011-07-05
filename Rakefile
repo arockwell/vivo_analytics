@@ -29,7 +29,7 @@ def delete_all_tag_for_deletion_entities(subject_file, object_file, model_config
   remove_rdf_file("#{object_file}.nt")
 end
 
-def create_query_task(query_name, query_location)
+def create_construct_task(query_name, query_location)
   task_name = "query_#{query_name}".intern
   desc "Run #{query_location}"
   task task_name do
@@ -37,6 +37,18 @@ def create_query_task(query_name, query_location)
     puts "Performing #{task_name}"
     puts "Running query: #{query_location}"
     run_query(query_location)
+  end
+end
+
+def create_select_task(query_name, query_location)
+  task_name = "query_#{query_name}".intern
+  desc "Run #{query_location}"
+  task task_name do
+    system("date")
+    puts "Performing #{task_name}"
+    puts "Running query: #{query_location}"
+    run_query(query_location)
+    system("cat #{query_location}.nt")
   end
 end
 
@@ -91,7 +103,7 @@ vivo_inferences_scratchpad_model = "/usr/share/vivo/harvester/config/models/vivo
 
 query_tasks = []
 query_files.each do |query_name, query_file|
-  query_tasks << create_query_task(query_name, query_file)
+  query_tasks << create_construct_task(query_name, query_file)
 end
 
 desc "Query all entities"
@@ -160,16 +172,11 @@ namespace :verify do
     }
     count_dsr_entity_tasks = []
     count_dsr_entity_queries.each do |query_name, query_location|
-      count_dsr_entity_tasks << create_query_task(query_name, query_location)
+      count_dsr_entity_tasks << create_select_task(query_name, query_location)
     end
 
     desc "Print counts of all entities that might have a ufVivo:harvestedBy tag"
-    task :all => count_dsr_entity_tasks do
-      count_dsr_entity_queries.each do |query_name, query_location|
-        puts query_name
-        system("cat #{query_location}.nt")
-      end
-    end
+    task :all => count_dsr_entity_tasks
     count_entity_tasks = count_entity_tasks + count_dsr_entity_tasks
 
   end
