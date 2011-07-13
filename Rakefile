@@ -82,6 +82,30 @@ where
   end
 end
 
+def generate_stray_predicate_count_task(query_name, predicate)
+  sparql = <<-EOH
+PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+select count(?x)
+where
+{
+ ?x <#{predicate}> ?y .
+ optional { ?y rdf:type ?type }
+ filter(!bound(?type))
+} 
+EOH
+  task_name = "query_#{query_name}".intern
+  desc "Run count of stray: #{predicate}"
+  task task_name do 
+    system("date")
+    puts "Performing #{task_name}"
+    puts "Running query: #{query_name}"
+    result_location = "#{QUERY_BASE_DIR}/#{query_name}.txt"
+    run_query_string(sparql, result_location)
+    system("cat #{result_location}")
+  end
+end
+
 query_files = { :role => "#{QUERY_BASE_DIR}/RoleQuery.sparql",
   :date_time_interval => "#{QUERY_BASE_DIR}/DateTimeInterval.sparql",
   :person_stub => "#{QUERY_BASE_DIR}/PersonStubQuery.sparql",
@@ -117,6 +141,7 @@ namespace :add do
 
   desc "Add deletion tag for all entities"
   task :all_deletion_tags => add_deletion_tag_tasks
+
 end
 
 desc "Find all statements related to entities of rdf:type ufVivo:tagForDeletion"
@@ -145,8 +170,24 @@ namespace :delete do
     puts "Performing delete_from_inf_scratchpad"
     delete_all_tag_for_deletion_entities(tag_for_deletion_by_subject_file, tag_for_deletion_by_object_file, vivo_inferences_scratchpad_model)
   end
+
 end
 
+namespace :reverse do
+  additions_file = "/usr/share/vivo/harvester/harvested-data/dsr/additions.rdf.xml"
+  xml_rdf_type = "RDF\/XML"
+ 
+  desc "Remove additions file"
+  task :remove_additions_file do
+    remove_rdf_file(additions_file, xml_rdf_type)
+  end
+
+  desc "Add additions file"
+  task :add_additions_file do
+    add_file(additions_file, xml_rdf_type)
+  end
+end
+   
 namespace :verify do
   count_entities = {
     :count_faculty => "http://vivoweb.org/ontology/core#FacultyMember",
@@ -156,7 +197,8 @@ namespace :verify do
     :count_non_faculty_academic =>"http://vivoweb.org/ontology/core#NonFacultyAcademic",
     :count_emeritus_professor => "http://vivoweb.org/ontology/core#EmeritusProfessor",
     :count_grant => "http://vivoweb.org/ontology/core#Grant",
-    :count_agreement => "http://vivoweb.org/ontology/core#Agreement"
+    :count_agreement => "http://vivoweb.org/ontology/core#Agreement",
+    :count_organization => "http://xmlns.com/foaf/0.1/Organization"
   }
   count_entity_tasks = []
   count_entities.each do |query_name, type|
@@ -179,6 +221,37 @@ namespace :verify do
     task :all => count_dsr_entity_tasks
     count_entity_tasks = count_entity_tasks + count_dsr_entity_tasks
 
+  end
+
+  namespace :stray do
+    count_stray = {
+      :person_in_position => "http://vivoweb.org/ontology/core#personInPosition",
+      :organization_for_position => "http://vivoweb.org/ontology/core#organizationForPosition",
+      :administers_grant => "http://vivoweb.org/ontology/core#administers",
+      :has_co_principal_investigator_role => "http://vivoweb.org/ontology/core#hasCo-PrincipalInvestigatorRole",
+      :has_principal_investigator_role => "http://vivoweb.org/ontology/core#hasPrincipalInvestigatorRole"
+    }
+    count_stray_tasks = []
+    count_stray.each do |query_name, pred|
+      count_stray_task = generate_stray_predicate_count_task(query_name, pred)
+      count_stray_tasks << count_stray_task
+    end
+    
+    desc "Print counts of all stray predicates"
+    task :all => count_stray_tasks
+    count_entity_tasks = count_entity_tasks + count_stray_tasks
+  end
+  namespace :duplicate do
+    duplicates = {
+      :duplicate_org_labels => "#{QUERY_BASE_DIR}/find_duplicate_org_labels.sparql"
+    }
+    duplicate_tasks = []
+    duplicates.each do |query_name, query_location|
+      duplicate_task = create_select_task(query_name, query_location)
+      duplicate_tasks << duplicate_task
+    end
+
+    count_entity_tasks = count_entity_tasks + duplicate_tasks 
   end
 
   desc "Count all entity types"
