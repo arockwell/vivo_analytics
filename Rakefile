@@ -223,6 +223,19 @@ namespace :verify do
 
   end
 
+  namespace :mods do
+    count_mods_entities = {
+      :count_people => "http://xmlns.com/foaf/0.1/Person",
+      #:count_authorship => "",
+      #:count_publication => "",
+      #:count_journal => ""
+    }
+    count_mods_entity_tasks = []
+    count_mods_entityies.each do |query_name, type|
+      count_mods_entity_tasks << generate_type_count_task(query_name, type)
+    end
+  end
+
   namespace :stray do
     count_stray = {
       :person_in_position => "http://vivoweb.org/ontology/core#personInPosition",
