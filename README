@@ -1,0 +1,7 @@
+VIVO ANALYTICS
+
+This is a Rakefile that can add data, remove data, and run an ever-growing set of queries to check the health of VIVO.
+
+To see all tasks:
+
+rake -T
