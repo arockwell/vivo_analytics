@@ -231,9 +231,13 @@ namespace :verify do
       #:count_journal => ""
     }
     count_mods_entity_tasks = []
-    count_mods_entityies.each do |query_name, type|
+    count_mods_entities.each do |query_name, type|
       count_mods_entity_tasks << generate_type_count_task(query_name, type)
     end
+
+    desc "Print counts of all entities that are related to mods harvesting"
+    task :all => count_mods_entity_tasks
+    # TODO: Consider adding this verify:all
   end
 
   namespace :stray do
