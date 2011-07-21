@@ -1,0 +1,9 @@
+PREFIX  core: <http://vivoweb.org/ontology/core#>
+
+select count(distinct ?pos)
+where
+{
+  ?person core:personInPosition ?pos .
+  optional { ?pos core:positionInOrganization ?org }
+  filter(!bound(?org))
+}

@@ -258,6 +258,18 @@ namespace :verify do
     task :all => count_stray_tasks
     count_entity_tasks = count_entity_tasks + count_stray_tasks
   end
+
+  namespace :missing_links do
+    count_missing_links = {
+      :people_to_positions_missing_org_link => "#{QUERY_BASE_DIR}/people_to_positions_missing_org_link.sparql"
+    }
+    count_missing_link_tasks = []
+    count_missing_links.each do |query_name, query_location|
+      count_missing_link_tasks << create_select_task(query_name, query_location)
+    end
+    count_entity_tasks = count_entity_tasks + count_missing_link_tasks
+  end
+
   namespace :duplicate do
     duplicates = {
       :duplicate_org_labels => "#{QUERY_BASE_DIR}/find_duplicate_org_labels.sparql"
